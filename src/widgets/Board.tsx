@@ -1,6 +1,13 @@
 import { useState, DragEvent } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { AddNewColumn, AddNewTask, EditColumn, EditTask } from "src/feature";
+import {
+  AddNewColumn,
+  AddNewTask,
+  DeleteColumn,
+  DeleteTask,
+  EditColumn,
+  EditTask,
+} from "src/feature";
 import { updateColumn, orderColumns } from "src/store/boardSlice";
 import { Task, Column } from "src/store/types";
 
@@ -96,7 +103,10 @@ export const BoardWidget = () => {
           >
             <div className="grid">
               <div className="flex justify-between">
-                <p>{column.title}</p>
+                <div className="flex gap-2">
+                  <DeleteColumn id={column.id} />
+                  <p>{column.title}</p>
+                </div>
 
                 <EditColumn title={column.title} columnId={column.id} />
               </div>
@@ -118,7 +128,10 @@ export const BoardWidget = () => {
                     onDrop={(e) => onTaskDrop(e, task.id, column.id)}
                   >
                     <div className="flex justify-between">
-                      <p className="text-xl font-semibold mb-2">{task.title}</p>
+                      <div className="flex gap-2 items-center">
+                        <DeleteTask id={task.id} columnId={column.id} />
+                        <p className="text-xl font-semibold">{task.title}</p>
+                      </div>
 
                       <EditTask
                         columnId={column.id}

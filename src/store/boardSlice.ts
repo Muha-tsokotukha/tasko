@@ -7,6 +7,8 @@ import {
   AddTaskPayload,
   EditColumnPayload,
   EditTaskPayload,
+  DeleteColumnPayload,
+  DeleteTaskPayload,
 } from "./types";
 
 const initialState: Column[] = [
@@ -120,6 +122,21 @@ const columnsSlice = createSlice({
       const taskIndex = tasks.findIndex((item) => item.id === id);
       tasks[taskIndex].title = title;
     },
+
+    deleteColumn(state, action: PayloadAction<DeleteColumnPayload>) {
+      const { id } = action.payload;
+
+      return state.filter((col) => col.id !== id);
+    },
+
+    deleteTask(state, action: PayloadAction<DeleteTaskPayload>) {
+      const { id, columnId } = action.payload;
+      const colIndex = state.findIndex((item) => item.id === columnId);
+
+      const tasks = state[colIndex].tasks.filter((task) => task.id !== id);
+
+      state[colIndex].tasks = tasks;
+    },
   },
 });
 
@@ -132,4 +149,6 @@ export const {
   addNewTask,
   editColumnTitle,
   editTaskTitle,
+  deleteColumn,
+  deleteTask,
 } = columnsSlice.actions;

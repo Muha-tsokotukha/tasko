@@ -12,11 +12,11 @@ export const EditPenIcon = ({ color = "#fff" }: Props) => (
     fill="#000000"
     cursor="pointer"
   >
-    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+    <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
     <g
       id="SVGRepo_tracerCarrier"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     ></g>
     <g id="SVGRepo_iconCarrier">
       <rect id="view-box" width="24" height="24" fill="none"></rect>{" "}

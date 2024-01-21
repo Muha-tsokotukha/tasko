@@ -48,3 +48,12 @@ export type EditTaskPayload = {
   id: number;
   columnId: number;
 };
+
+export type DeleteColumnPayload = {
+  id: number;
+};
+
+export type DeleteTaskPayload = {
+  columnId: number;
+  id: number;
+};
