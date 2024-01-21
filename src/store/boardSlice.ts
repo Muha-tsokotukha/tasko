@@ -4,6 +4,9 @@ import {
   UpdateColumnPayload,
   OrderColumnsPayload,
   AddColumnPayload,
+  AddTaskPayload,
+  EditColumnPayload,
+  EditTaskPayload,
 } from "./types";
 
 const initialState: Column[] = [
@@ -97,9 +100,36 @@ const columnsSlice = createSlice({
       const { title } = action.payload;
       state.push({ id: new Date().getTime(), title, tasks: [] });
     },
+
+    editColumnTitle(state, action: PayloadAction<EditColumnPayload>) {
+      const { title, id } = action.payload;
+      const index = state.findIndex((item) => item.id === id);
+      state[index].title = title;
+    },
+
+    addNewTask(state, action: PayloadAction<AddTaskPayload>) {
+      const { title, columnId } = action.payload;
+      const columnIndex = state.findIndex((col) => col.id === columnId);
+      state[columnIndex].tasks.push({ id: new Date().getTime(), title });
+    },
+
+    editTaskTitle(state, action: PayloadAction<EditTaskPayload>) {
+      const { title, id, columnId } = action.payload;
+      const index = state.findIndex((item) => item.id === columnId);
+      const { tasks } = state[index];
+      const taskIndex = tasks.findIndex((item) => item.id === id);
+      tasks[taskIndex].title = title;
+    },
   },
 });
 
 export default columnsSlice.reducer;
 
-export const { updateColumn, orderColumns } = columnsSlice.actions;
+export const {
+  updateColumn,
+  orderColumns,
+  addColumn,
+  addNewTask,
+  editColumnTitle,
+  editTaskTitle,
+} = columnsSlice.actions;

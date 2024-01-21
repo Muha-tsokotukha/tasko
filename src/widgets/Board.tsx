@@ -1,5 +1,6 @@
 import { useState, DragEvent } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { AddNewColumn, AddNewTask, EditColumn, EditTask } from "src/feature";
 import { updateColumn, orderColumns } from "src/store/boardSlice";
 import { Task, Column } from "src/store/types";
 
@@ -94,7 +95,11 @@ export const BoardWidget = () => {
             onDragStart={(e) => onColumnDragStart(e, column)}
           >
             <div className="grid">
-              <p>{column.title}</p>
+              <div className="flex justify-between">
+                <p>{column.title}</p>
+
+                <EditColumn title={column.title} columnId={column.id} />
+              </div>
 
               <div
                 className="h-10 w-64"
@@ -112,7 +117,15 @@ export const BoardWidget = () => {
                     onDragOver={onTaskDragOver}
                     onDrop={(e) => onTaskDrop(e, task.id, column.id)}
                   >
-                    <p className="text-xl font-semibold mb-2">{task.title}</p>
+                    <div className="flex justify-between">
+                      <p className="text-xl font-semibold mb-2">{task.title}</p>
+
+                      <EditTask
+                        columnId={column.id}
+                        taskId={task.id}
+                        title={task.title}
+                      />
+                    </div>
                   </div>
 
                   <div
@@ -122,6 +135,8 @@ export const BoardWidget = () => {
                   />
                 </>
               ))}
+
+              <AddNewTask columnId={column.id} />
             </div>
           </div>
 
@@ -133,11 +148,7 @@ export const BoardWidget = () => {
         </>
       ))}
 
-      <div>
-        <button className="bg-blue-500 text-white p-4 rounded-lg">
-          +column
-        </button>
-      </div>
+      <AddNewColumn />
     </main>
   );
 };

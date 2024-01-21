@@ -32,3 +32,19 @@ export type OrderColumnsPayload = {
 export type AddColumnPayload = {
   title: string;
 };
+
+export type EditColumnPayload = {
+  title: string;
+  id: number;
+};
+
+export type AddTaskPayload = {
+  title: string;
+  columnId: number;
+};
+
+export type EditTaskPayload = {
+  title: string;
+  id: number;
+  columnId: number;
+};
