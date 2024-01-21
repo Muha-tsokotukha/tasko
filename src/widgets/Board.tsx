@@ -1,51 +1,15 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, DragEvent } from "react";
-
-type Task = {
-  id: number;
-  title: string;
-};
-
-type Column = {
-  id: number;
-  title: string;
-  tasks: Task[];
-};
+import { useSelector, useDispatch } from "react-redux";
+import { updateColumn, orderColumns } from "src/store/boardSlice";
+import { Task, Column } from "src/store/types";
 
 export const BoardWidget = () => {
   const [draggedTask, setDraggedTask] = useState<Task>();
   const [taskDraggedColumnId, setTaskDraggedColumnId] = useState<number>();
   const [draggedColumn, setDraggedColumn] = useState<Column>();
 
-  const [columns, setColumns] = useState<Column[]>([
-    {
-      id: 1,
-      title: "col 1",
-      tasks: [
-        { id: 1, title: "aaaa" },
-        { id: 2, title: "bbbb" },
-        { id: 3, title: "cccc" },
-      ],
-    },
-    {
-      id: 2,
-      title: "col 2",
-      tasks: [
-        { id: 4, title: "dddd" },
-        { id: 5, title: "eeee" },
-        { id: 6, title: "ffff" },
-      ],
-    },
-    {
-      id: 3,
-      title: "col 3",
-      tasks: [
-        { id: 7, title: "gggg" },
-        { id: 8, title: "hhhh" },
-        { id: 9, title: "iiii" },
-      ],
-    },
-  ]);
+  const columns = useSelector((state: { columns: Column[] }) => state.columns);
+  const dispatch = useDispatch();
 
   const onTaskDragStart = (
     _e: DragEvent<HTMLDivElement>,
@@ -83,35 +47,17 @@ export const BoardWidget = () => {
     const { y, height } = e.currentTarget.getBoundingClientRect();
     const middlePoint = y + Math.floor(height / 2);
 
-    const columnIndex = columns.findIndex((col) => col.id === columnId);
-
-    const updatedTasks = columns[columnIndex].tasks.filter(
-      (task) => task.id !== draggedTask.id
+    dispatch(
+      updateColumn({
+        mouseY,
+        middlePoint,
+        columnId,
+        draggedTask,
+        id,
+        taskDraggedColumnId,
+        spacer,
+      })
     );
-
-    const insertIndex = updatedTasks.findIndex((task) => task.id === id);
-
-    if (mouseY > middlePoint || spacer === 1)
-      updatedTasks.splice(insertIndex + 1, 0, draggedTask);
-    else if (spacer === -1) updatedTasks.splice(0, 0, draggedTask);
-    else updatedTasks.splice(insertIndex, 0, draggedTask);
-
-    setColumns((prev) => {
-      const currentColumnIndex = columns.findIndex(
-        (col) => col.id === taskDraggedColumnId
-      );
-
-      if (currentColumnIndex !== columnIndex) {
-        const currentColumnUpdatedTasks = columns[
-          currentColumnIndex
-        ].tasks.filter((task) => task.id !== draggedTask.id);
-        prev[currentColumnIndex].tasks = currentColumnUpdatedTasks;
-      }
-
-      prev[columnIndex].tasks = updatedTasks;
-
-      return [...prev];
-    });
   };
 
   const onColumnDrop = (
@@ -127,20 +73,11 @@ export const BoardWidget = () => {
     const { x, width } = e.currentTarget.getBoundingClientRect();
     const middlePoint = x + Math.floor(width / 2);
 
-    const updatedColumns = columns.filter((col) => col.id !== draggedColumn.id);
-
-    const insertIndex = updatedColumns.findIndex((col) => col.id === id);
-
-    if (mouseX > middlePoint || spacer === 1)
-      updatedColumns.splice(insertIndex + 1, 0, draggedColumn);
-    else if (spacer === -1) updatedColumns.splice(0, 0, draggedColumn);
-    else updatedColumns.splice(insertIndex, 0, draggedColumn);
-
-    setColumns(updatedColumns);
+    dispatch(orderColumns({ mouseX, middlePoint, spacer, draggedColumn, id }));
   };
 
   return (
-    <main className="container mt-8 flex items-start px-8 pb-5 overflow-x-auto">
+    <main className="container mt-8 flex items-start px-8 pb-5 overflow-x-scroll shadow-lg">
       <div
         className="min-h-[75vh] w-5 bg-white"
         onDrop={(e) => onColumnDrop(e, -1, -1)}
@@ -151,7 +88,7 @@ export const BoardWidget = () => {
           <div
             draggable
             key={`column-${column.id}`}
-            className="rounded-lg bg-gradient-to-r from-teal-500 to-blue-500 text-white p-4 max-h-[75vh] overflow-x-clip overflow-y-auto"
+            className="rounded-lg bg-gradient-to-r from-teal-500 to-blue-500 text-white p-4 max-h-[75vh] overflow-y-auto flex-shrink-0"
             onDragOver={onColumnDragOver}
             onDrop={(e) => onColumnDrop(e, column.id)}
             onDragStart={(e) => onColumnDragStart(e, column)}
@@ -189,12 +126,18 @@ export const BoardWidget = () => {
           </div>
 
           <div
-            className="min-h-[75vh] w-5 bg-white"
+            className="min-h-[75vh] w-5 bg-white flex-shrink-0"
             onDrop={(e) => onColumnDrop(e, column.id, 1)}
             onDragOver={onColumnDragOver}
           />
         </>
       ))}
+
+      <div>
+        <button className="bg-blue-500 text-white p-4 rounded-lg">
+          +column
+        </button>
+      </div>
     </main>
   );
 };
